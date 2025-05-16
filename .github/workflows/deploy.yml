@@ -6,27 +6,21 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Code ophalen uit GitHub
-      uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-    - name: Node.js installeren
-      uses: actions/setup-node@v3
+    - name: Login to Azure
+      uses: azure/login@v1
       with:
-        node-version: '18'
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Dependencies installeren
-      run: npm install
-
-    - name: App bouwen
-      run: npm run build
-
-    - name: Deployen naar Azure
+    - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'devops-inleveropdracht'  # jouw Azure App Service naam
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        app-name: devops-inleveropdracht
+        slot-name: production
         package: .
